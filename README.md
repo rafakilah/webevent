@@ -9,7 +9,7 @@ Platform event all-in-one: landing page, registrasi, pembayaran via transfer, ti
 - [x] Tahap 1: setup project, database, seed
 - [x] Tahap 2: landing page + form daftar
 - [x] Tahap 3: halaman status + upload bukti + tiket QR
-- [ ] Tahap 4: auth admin + dashboard + verifikasi pembayaran + export
+- [x] Tahap 4: auth admin + dashboard + verifikasi pembayaran + export
 - [ ] Tahap 5: halaman scan + check-in manual
 - [ ] Tahap 6: realtime, polishing, README
 
