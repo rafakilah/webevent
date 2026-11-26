@@ -4,7 +4,7 @@ Platform event all-in-one untuk kepanitiaan kampus: **landing page, registrasi, 
 
 > Event, pembicara, dan rekening di repo ini fiktif. Penyelenggara: SBM.
 
-**Demo:** _(isi URL Vercel di sini)_ · **Login panitia:** `/admin/login`
+**Demo:** https://webevent-omega.vercel.app · **Login panitia:** `/admin/login`
 
 ---
 
