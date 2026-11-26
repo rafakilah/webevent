@@ -16,6 +16,7 @@ import { STATUS_LABEL, StatusBadge } from '@/components/status/status-badge'
 import { buttonClass } from '@/components/ui/button'
 import { cn } from '@/lib/cn'
 import { ParticipantDialog } from './participant-dialog'
+import { RealtimeIndicator } from './realtime-indicator'
 import { StatsCards } from './stats-cards'
 
 const selectClass =
@@ -59,6 +60,10 @@ export function Dashboard({
 
   return (
     <div className="space-y-5">
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-xl font-bold">Dashboard</h1>
+        <RealtimeIndicator />
+      </div>
       <StatsCards stats={stats} />
 
       {waitingQueue.length > 0 && (
