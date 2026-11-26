@@ -7,7 +7,7 @@ Platform event all-in-one: landing page, registrasi, pembayaran via transfer, ti
 ## Status pengerjaan
 
 - [x] Tahap 1: setup project, database, seed
-- [ ] Tahap 2: landing page + form daftar
+- [x] Tahap 2: landing page + form daftar
 - [ ] Tahap 3: halaman status + upload bukti + tiket QR
 - [ ] Tahap 4: auth admin + dashboard + verifikasi pembayaran + export
 - [ ] Tahap 5: halaman scan + check-in manual

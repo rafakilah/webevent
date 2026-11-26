@@ -51,6 +51,9 @@ export type EventConfig = {
     notes: string[]
   }
   registration: {
+    /** Tutup pendaftaran dengan mengubah ini menjadi false. */
+    open: boolean
+    closedMessage: string
     /** Regex format NIM kampus. */
     nimPattern: string
     nimHint: string
@@ -112,6 +115,8 @@ export const eventConfig = {
     ],
   },
   registration: {
+    open: true,
+    closedMessage: 'Pendaftaran sudah ditutup. Sampai jumpa di event berikutnya!',
     nimPattern: '^[0-9]{8,15}$',
     nimHint: '8 sampai 15 digit angka',
     majorSuggestions: [

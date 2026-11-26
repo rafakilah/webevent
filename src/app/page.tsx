@@ -1,16 +1,32 @@
-import { eventConfig } from '@/config/event'
-import { formatLongDate } from '@/lib/format'
+import { SiteFooter } from '@/components/site-footer'
+import { SiteHeader } from '@/components/site-header'
+import { About } from '@/components/landing/about'
+import { Contact } from '@/components/landing/contact'
+import { Faq } from '@/components/landing/faq'
+import { Hero } from '@/components/landing/hero'
+import { Rundown } from '@/components/landing/rundown'
+import { Speakers } from '@/components/landing/speakers'
+import { Ticket } from '@/components/landing/ticket'
 
-// Placeholder Tahap 1. Landing page lengkap dibuat di Tahap 2.
+/*
+ * Landing page sepenuhnya statis: semua konten berasal dari config, jadi
+ * Next.js merendernya menjadi HTML saat build dan disajikan langsung dari CDN.
+ * Satu-satunya bagian interaktif adalah countdown (komponen client).
+ */
 export default function HomePage() {
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center gap-2 px-4 py-16">
-      <p className="text-sm text-slate-500">{eventConfig.organizer.name} mempersembahkan</p>
-      <h1 className="text-3xl font-bold">{eventConfig.name}</h1>
-      <p className="text-lg">{eventConfig.tagline}</p>
-      <p className="text-slate-600">
-        {formatLongDate(eventConfig.startsAt)} · {eventConfig.venue.name}
-      </p>
-    </main>
+    <>
+      <SiteHeader />
+      <main>
+        <Hero />
+        <About />
+        <Speakers />
+        <Rundown />
+        <Ticket />
+        <Faq />
+        <Contact />
+      </main>
+      <SiteFooter />
+    </>
   )
 }
