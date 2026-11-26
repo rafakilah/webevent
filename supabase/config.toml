@@ -1,0 +1,25 @@
+# Konfigurasi minimal untuk Supabase CLI (`npx supabase start`).
+# Nilai yang tidak ditulis memakai default CLI.
+project_id = "webevent"
+
+[api]
+port = 54321
+
+[db]
+port = 54322
+major_version = 17
+
+[db.seed]
+# Data demo diisi lewat `npm run seed` (perlu Auth + Storage), bukan seed.sql.
+enabled = false
+
+[studio]
+port = 54323
+
+[auth]
+site_url = "http://localhost:3000"
+# Hanya admin yang punya akun, dan akun dibuat lewat script/dashboard.
+enable_signup = false
+
+[auth.email]
+enable_signup = false
