@@ -106,14 +106,37 @@ begin
 end;
 $$;
 
--- Simulasikan file yang sudah diunggah ke Storage (sebagai superuser).
-reset role;
-insert into storage.objects (bucket_id, name)
-select 'payment-proofs', p.id || '/bukti-1.jpg' from public.participants p where nim in ('1234567890', '1234567891');
-insert into storage.objects (bucket_id, name)
-select 'payment-proofs', p.id || '/bukti-2.jpg' from public.participants p where nim = '1234567890';
+-- Upload ke Storage sebagai anon: policy INSERT hanya mengizinkan folder token
+-- milik peserta yang statusnya boleh upload.
+do $$
+begin
+  insert into storage.objects (bucket_id, name)
+  values ('payment-proofs', current_setting('test.token_budi') || '/bukti-1.jpg'),
+         ('payment-proofs', current_setting('test.token_budi') || '/bukti-2.jpg'),
+         ('payment-proofs', current_setting('test.token_sari') || '/bukti-1.jpg');
 
-set local role anon;
+  begin
+    insert into storage.objects (bucket_id, name)
+    values ('payment-proofs', 'ffffffffffffffffffffffffffffffff/palsu.jpg');
+    assert false, 'upload ke folder token palsu seharusnya ditolak';
+  exception when insufficient_privilege then null;
+  end;
+
+  begin
+    insert into storage.objects (bucket_id, name)
+    values ('payment-proofs', current_setting('test.token_budi') || '/sub/folder.jpg');
+    assert false, 'upload ke subfolder seharusnya ditolak';
+  exception when insufficient_privilege then null;
+  end;
+
+  begin
+    insert into storage.objects (bucket_id, name) values ('bucket-lain', 'x.jpg');
+    assert false, 'upload ke bucket lain seharusnya ditolak';
+  exception when insufficient_privilege or foreign_key_violation then null;
+  end;
+  raise notice 'OK  anon hanya bisa upload ke folder tokennya sendiri';
+end;
+$$;
 
 do $$
 declare
@@ -125,6 +148,8 @@ begin
   raise notice 'OK  anon tidak bisa melihat bukti transfer';
 end;
 $$;
+
+set local role anon;
 
 reset role;
 select set_config('test.budi_id', (select id::text from public.participants where nim = '1234567890'), false);
@@ -138,7 +163,7 @@ begin
   -- Path di luar folder milik peserta ditolak.
   begin
     perform public.submit_payment_proof(current_setting('test.token_budi'),
-      current_setting('test.sari_id') || '/bukti-1.jpg');
+      current_setting('test.token_sari') || '/bukti-1.jpg');
     assert false, 'path milik orang lain seharusnya ditolak';
   exception when raise_exception then
     assert sqlerrm like '%Path%', 'harus ditolak karena path';
@@ -147,7 +172,7 @@ begin
   -- File yang belum benar-benar diunggah ditolak.
   begin
     perform public.submit_payment_proof(current_setting('test.token_budi'),
-      current_setting('test.budi_id') || '/tidak-ada.jpg');
+      current_setting('test.token_budi') || '/tidak-ada.jpg');
     assert false, 'file yang tidak ada seharusnya ditolak';
   exception when raise_exception then
     assert sqlerrm like '%tidak ditemukan%', 'harus ditolak karena file tidak ada';
@@ -161,15 +186,23 @@ begin
   end;
 
   v_status := public.submit_payment_proof(current_setting('test.token_budi'),
-    current_setting('test.budi_id') || '/bukti-1.jpg');
+    current_setting('test.token_budi') || '/bukti-1.jpg');
   assert v_status = 'menunggu_verifikasi';
   perform public.submit_payment_proof(current_setting('test.token_sari'),
-    current_setting('test.sari_id') || '/bukti-1.jpg');
+    current_setting('test.token_sari') || '/bukti-1.jpg');
+
+  -- Setelah bukti terkirim, folder terkunci: tidak bisa menambah file lagi.
+  begin
+    insert into storage.objects (bucket_id, name)
+    values ('payment-proofs', current_setting('test.token_budi') || '/bukti-3.jpg');
+    assert false, 'upload saat menunggu verifikasi seharusnya ditolak policy';
+  exception when insufficient_privilege then null;
+  end;
 
   -- Tidak bisa upload ulang saat sedang menunggu verifikasi.
   begin
     perform public.submit_payment_proof(current_setting('test.token_budi'),
-      current_setting('test.budi_id') || '/bukti-2.jpg');
+      current_setting('test.token_budi') || '/bukti-2.jpg');
     assert false, 'upload ulang saat menunggu verifikasi seharusnya ditolak';
   exception when raise_exception then null;
   end;
@@ -306,7 +339,7 @@ begin
   assert (select payment_status from public.get_participant_by_token(current_setting('test.token_budi'))) = 'ditolak';
   assert (select rejection_reason from public.get_participant_by_token(current_setting('test.token_budi'))) = 'Nominal tidak sesuai';
   perform public.submit_payment_proof(current_setting('test.token_budi'),
-    current_setting('test.budi_id') || '/bukti-2.jpg');
+    current_setting('test.token_budi') || '/bukti-2.jpg');
   assert (select payment_status from public.get_participant_by_token(current_setting('test.token_budi'))) = 'menunggu_verifikasi';
   assert (select rejection_reason from public.get_participant_by_token(current_setting('test.token_budi'))) is null;
   raise notice 'OK  peserta yang ditolak bisa mengunggah ulang';

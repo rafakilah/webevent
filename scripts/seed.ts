@@ -151,7 +151,7 @@ async function resetData() {
     console.log(`✓ ${count} peserta lama dihapus`)
   }
 
-  // Bersihkan file bukti lama (struktur folder: <participant_id>/<file>).
+  // Bersihkan file bukti lama (struktur folder: <token>/<file>).
   const { data: folders } = await supabase.storage.from(BUCKET).list('', { limit: 1000 })
   for (const folder of folders ?? []) {
     const { data: files } = await supabase.storage.from(BUCKET).list(folder.name)
@@ -198,7 +198,7 @@ async function main() {
     const status = statusFor(i)
     if (status === 'menunggu_pembayaran') continue
 
-    const proofPath = `${p.id}/seed-bukti-transfer.png`
+    const proofPath = `${p.token}/seed-bukti-transfer.png`
     const { error: uploadError } = await supabase.storage
       .from(BUCKET)
       .upload(proofPath, proofImage, { contentType: 'image/png', upsert: true })

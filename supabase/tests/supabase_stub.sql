@@ -74,6 +74,20 @@ create table if not exists storage.objects (
 );
 
 alter table storage.objects enable row level security;
+
+-- Sama dengan fungsi bawaan Supabase: 'a/b/c.jpg' -> {a,b}
+create or replace function storage.foldername(name text)
+returns text[]
+language plpgsql
+as $$
+declare
+  _parts text[];
+begin
+  select string_to_array(name, '/') into _parts;
+  return _parts[1:array_length(_parts, 1) - 1];
+end;
+$$;
+grant execute on function storage.foldername(text) to anon, authenticated, service_role;
 grant select, insert, update, delete on storage.objects to anon, authenticated, service_role;
 
 do $$
