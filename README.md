@@ -10,7 +10,7 @@ Platform event all-in-one: landing page, registrasi, pembayaran via transfer, ti
 - [x] Tahap 2: landing page + form daftar
 - [x] Tahap 3: halaman status + upload bukti + tiket QR
 - [x] Tahap 4: auth admin + dashboard + verifikasi pembayaran + export
-- [ ] Tahap 5: halaman scan + check-in manual
+- [x] Tahap 5: halaman scan + check-in manual
 - [ ] Tahap 6: realtime, polishing, README
 
 ## Stack
@@ -24,7 +24,7 @@ Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · Supabase (Postgres, A
 1. Buat project baru di [supabase.com](https://supabase.com).
 2. **Authentication > Sign In / Providers**: matikan _Allow new users to sign up_.
 3. **SQL Editor**: jalankan file di `supabase/migrations/` berurutan (nama file diawali tanggal). Migration membuat tabel, fungsi, RLS, bucket `payment-proofs`, policy upload, dan mengaktifkan Realtime. Alternatif: `npx supabase link` lalu `npx supabase db push`.
-4. **Project Settings > API Keys**: salin Project URL dan publishable key. Secret key hanya dibutuhkan untuk `npm run seed` dan `npm run test:race` di laptop.
+4. **Project Settings > API Keys**: salin Project URL dan publishable key. Secret key hanya dibutuhkan untuk `npm run seed` di laptop (`npm run test:race` cukup dengan akun admin).
 
 > Aplikasi web hanya butuh `NEXT_PUBLIC_SUPABASE_URL` dan `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Tidak ada secret key di server: semua akses dibatasi RLS dan fungsi Postgres.
 
